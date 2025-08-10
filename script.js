@@ -8,6 +8,14 @@ function scrollToContent() {
     });
 }
 
+function scrollToForm() {
+    const form = document.querySelector('.contact-form-container');
+    form.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+    });
+}
+
 function showMessage() {
     const messages = [
         "Hello there! 👋",
