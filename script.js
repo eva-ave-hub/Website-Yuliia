@@ -1,19 +1,177 @@
 // Interactive functionality for the Hello World website
 
 function scrollToContent() {
-    const content = document.querySelector('.container');
-    content.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-    });
+    // Scroll directly to the contact form section (4th section)
+    const contactForm = document.querySelector('.contact-form-container');
+    
+    if (contactForm) {
+        contactForm.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    } else {
+        // Fallback - scroll to bottom of page
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
 }
 
 function scrollToForm() {
-    const form = document.querySelector('.contact-form-container');
-    form.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
+    const contactForm = document.querySelector('.contact-form-container');
+    
+    if (contactForm) {
+        contactForm.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    } else {
+        // Fallback - scroll to bottom of page
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
+}
+
+// Enhanced scrolling function that can be used for any button
+function scrollToSection(sectionSelector, fallbackSelector = null) {
+    const targetSection = document.querySelector(sectionSelector);
+    
+    if (targetSection) {
+        // Add visual feedback
+        targetSection.style.outline = '2px solid #667eea';
+        targetSection.style.outlineOffset = '5px';
+        
+        targetSection.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+        
+        // Remove outline after scrolling
+        setTimeout(() => {
+            targetSection.style.outline = '';
+            targetSection.style.outlineOffset = '';
+        }, 2000);
+    } else if (fallbackSelector) {
+        const fallbackSection = document.querySelector(fallbackSelector);
+        if (fallbackSection) {
+            fallbackSection.style.outline = '2px solid #667eea';
+            fallbackSection.style.outlineOffset = '5px';
+            
+            fallbackSection.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+            
+            setTimeout(() => {
+                fallbackSection.style.outline = '';
+                fallbackSection.style.outlineOffset = '';
+            }, 2000);
+        } else {
+            // Final fallback - scroll to bottom
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+    } else {
+        // Scroll to bottom if no fallback specified
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
+}
+
+// Scroll to top function
+function scrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
     });
+}
+
+// Add scroll progress indicator
+function addScrollProgressIndicator() {
+    const progressBar = document.createElement('div');
+    progressBar.id = 'scroll-progress';
+    progressBar.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 0%;
+        height: 3px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        z-index: 9999;
+        transition: width 0.1s ease;
+    `;
+    
+    document.body.appendChild(progressBar);
+    
+    window.addEventListener('scroll', () => {
+        const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrollPercent = (scrollTop / scrollHeight) * 100;
+        progressBar.style.width = scrollPercent + '%';
+    });
+}
+
+// Add scroll to top button
+function addScrollToTopButton() {
+    const scrollToTopBtn = document.createElement('button');
+    scrollToTopBtn.id = 'scroll-to-top';
+    scrollToTopBtn.innerHTML = '↑';
+    scrollToTopBtn.title = 'Scroll to top';
+    scrollToTopBtn.style.cssText = `
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        font-size: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    `;
+    
+    document.body.appendChild(scrollToTopBtn);
+    
+    // Show/hide button based on scroll position
+    window.addEventListener('scroll', () => {
+        const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        
+        if (scrollTop > 300) {
+            scrollToTopBtn.style.opacity = '1';
+            scrollToTopBtn.style.visibility = 'visible';
+        } else {
+            scrollToTopBtn.style.opacity = '0';
+            scrollToTopBtn.style.visibility = 'hidden';
+        }
+    });
+    
+    // Add hover effects
+    scrollToTopBtn.addEventListener('mouseenter', () => {
+        scrollToTopBtn.style.transform = 'scale(1.1)';
+        scrollToTopBtn.style.boxShadow = '0 6px 20px rgba(0,0,0,0.3)';
+    });
+    
+    scrollToTopBtn.addEventListener('mouseleave', () => {
+        scrollToTopBtn.style.transform = 'scale(1)';
+        scrollToTopBtn.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+    });
+    
+    // Add click functionality
+    scrollToTopBtn.addEventListener('click', scrollToTop);
 }
 
 function showMessage() {
@@ -63,6 +221,15 @@ function showMessage() {
 
 // Add some interactive effects to cards
 document.addEventListener('DOMContentLoaded', function() {
+    // Enhance button scrolling functionality
+    enhanceButtonScrolling();
+    
+    // Add scroll progress indicator
+    addScrollProgressIndicator();
+    
+    // Add scroll to top button
+    addScrollToTopButton();
+    
     const cards = document.querySelectorAll('.card');
     
     // Optimize video loading for better performance
@@ -329,18 +496,31 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
+// Enhanced button scrolling functionality
+function enhanceButtonScrolling() {
+    // Find all buttons that should scroll to sections
+    const scrollButtons = document.querySelectorAll('button[onclick*="scroll"], .hero-button, .cta-button, .reviews-button');
+    
+    scrollButtons.forEach(button => {
+        // Remove existing onclick attributes to prevent conflicts
+        const existingOnclick = button.getAttribute('onclick');
+        if (existingOnclick && existingOnclick.includes('scroll')) {
+            button.removeAttribute('onclick');
+        }
+        
+        // Add click event listeners
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // All buttons now scroll directly to the contact form section
+            scrollToSection('.contact-form-container');
+        });
+    });
+}
+
 // Add CSS animation for the notification
 const style = document.createElement('style');
 style.textContent = `
-    @keyframes slideIn {
-        from {
-            transform: translateX(400px);
-        }
-        to {
-            transform: translateX(0);
-        }
-    }
-    
     @keyframes fadeIn {
         from {
             opacity: 0;
@@ -801,8 +981,13 @@ function setupFormValidation() {
         // Show loading state
         const submitBtn = this.querySelector('.contact-submit-btn');
         const originalText = submitBtn.textContent;
-        submitBtn.textContent = 'Надсилаю...';
+        
+        // Create loading animation with three dots
+        submitBtn.innerHTML = '<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span> Надсилаю';
         submitBtn.disabled = true;
+        
+        // Add loading class for styling
+        submitBtn.classList.add('loading');
         
         // Prepare data for Google Apps Script
         const data = {
@@ -846,6 +1031,7 @@ function setupFormValidation() {
             // Restore button state
             submitBtn.textContent = originalText;
             submitBtn.disabled = false;
+            submitBtn.classList.remove('loading'); // Remove loading class
         });
     });
 }
@@ -884,11 +1070,12 @@ function showFormNotification(message, type) {
     notification.className = `form-notification ${type}`;
     notification.textContent = message;
     
-    // Style the notification
+    // Style the notification with better positioning
     notification.style.cssText = `
         position: fixed;
         top: 20px;
-        right: 20px;
+        left: 50%;
+        transform: translateX(-50%);
         background: ${type === 'success' ? 'linear-gradient(135deg, #28a745 0%, #20c997 100%)' : 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)'};
         color: white;
         padding: 15px 25px;
@@ -896,17 +1083,43 @@ function showFormNotification(message, type) {
         box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         font-weight: 600;
         z-index: 1000;
-        transform: translateX(400px);
-        transition: transform 0.3s ease;
-        animation: slideIn 0.5s ease forwards;
+        opacity: 0;
+        transition: all 0.3s ease;
+        max-width: 90%;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 300px;
+        font-size: 14px;
     `;
+    
+    // Add responsive adjustments
+    if (window.innerWidth <= 768) {
+        notification.style.minWidth = '280px';
+        notification.style.padding = '12px 20px';
+        notification.style.fontSize = '13px';
+        notification.style.top = '15px';
+    }
+    
+    if (window.innerWidth <= 480) {
+        notification.style.minWidth = '250px';
+        notification.style.padding = '10px 16px';
+        notification.style.fontSize = '12px';
+        notification.style.top = '10px';
+    }
     
     // Add the notification to the page
     document.body.appendChild(notification);
     
+    // Animate in
+    setTimeout(() => {
+        notification.style.opacity = '1';
+    }, 10);
+    
     // Remove the notification after 4 seconds
     setTimeout(() => {
-        notification.style.transform = 'translateX(400px)';
+        notification.style.opacity = '0';
         setTimeout(() => {
             if (document.body.contains(notification)) {
                 document.body.removeChild(notification);
