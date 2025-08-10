@@ -153,6 +153,8 @@ body {
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     margin-bottom: 60px;
+    will-change: scroll-position; /* Optimize scrolling performance */
+    contain: layout style paint; /* Improve rendering performance */
 }
 
 /* Style for the button in reviews section */
@@ -181,6 +183,7 @@ body {
     text-align: center;
     position: relative;
     z-index: 1; /* Ensure proper stacking context */
+    contain: layout style; /* Improve performance */
 }
 
 .video-placeholder {
@@ -238,6 +241,9 @@ body {
     -moz-user-select: none;
     -ms-user-select: none;
     z-index: 1; /* Ensure video is clickable */
+    will-change: transform; /* Optimize for animations */
+    backface-visibility: hidden; /* Reduce GPU usage */
+    transform: translateZ(0); /* Force hardware acceleration */
 }
 
 .video-player::before {

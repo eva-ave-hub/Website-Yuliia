@@ -57,6 +57,23 @@ function showMessage() {
 document.addEventListener('DOMContentLoaded', function() {
     const cards = document.querySelectorAll('.card');
     
+    // Optimize video loading for better performance
+    const videos = document.querySelectorAll('.video-player');
+    videos.forEach(video => {
+        // Only load video when it comes into viewport
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Video is visible, preload metadata only
+                    video.preload = 'metadata';
+                    observer.unobserve(video);
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        observer.observe(video);
+    });
+    
     // Add click effect to cards
     cards.forEach(card => {
         card.addEventListener('click', function() {
