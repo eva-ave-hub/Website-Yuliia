@@ -393,7 +393,7 @@ body {
         line-height: 1.1; /* Tighter line height for medium screens */
         margin-bottom: 120px; /* Reduced margin for mobile */
         position: relative;
-        top: -200px; /* Move title up 200px */
+        top: -150px; /* Move title up 150px (was -200px, now 50px more space from top) */
     }
     
     .hero-subtitle {
@@ -439,7 +439,7 @@ body {
         line-height: 1.1; /* Tighter line height for small screens */
         margin-bottom: 80px; /* Further reduced margin for small screens */
         position: relative;
-        top: -200px; /* Move title up 200px */
+        top: -150px; /* Move title up 150px (was -200px, now 50px more space from top) */
     }
     
     .hero-subtitle {
