@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello World - Welcome!</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title"></h1>
+            <p class="hero-subtitle">Мене звати Юлія, і я допомагаю людям вивчати польську мову</p>
+            <button class="hero-button" onclick="scrollToContent()">Я хочу два вступних уроки</button>
+        </div>
+        <div class="hero-overlay"></div>
+    </section>
+
+    <!-- Student Reviews Section -->
+    <section class="reviews-section">
+        <div class="reviews-container">
+            <h1 class="reviews-title">Відгуки наших студентів</h1>
+            <h2 class="reviews-subtitle">Подивіться, що говорять про нас</h2>
+            
+            <div class="videos-container">
+                <div class="video-item">
+                    <p class="video-text-overlay">"Юлія допомогла мені заговорити польською вже через 2 тижні!" - Анна, 24 роки</p>
+                    <video class="video-player" controls preload="metadata" data-text="Юлія допомогла мені заговорити польською вже через 2 тижні! - Анна, 24 роки">
+                        <source src="videos/placeholder.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                
+                <div class="video-item">
+                    <p class="video-text-overlay">"Найкращий викладач польської мови! Дуже рекомендую." - Михайло, 31 рік</p>
+                    <video class="video-player" controls preload="metadata" data-text="Найкращий викладач польської мови! Дуже рекомендую. - Михайло, 31 рік">
+                        <source src="videos/placeholder.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                
+                <div class="video-item">
+                    <p class="video-text-overlay">"Професійний підхід та індивідуальна програма навчання." - Олена, 28 років</p>
+                    <video class="video-player" controls preload="metadata" data-text="Професійний підхід та індивідуальна програма навчання. - Олена, 28 років">
+                        <source src="videos/placeholder.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                
+                <div class="video-item">
+                    <p class="video-text-overlay">"Результат перевершив всі мої очікування!" - Дмитро, 26 років</p>
+                    <video class="video-player" controls preload="metadata" data-text="Результат перевершив всі мої очікування! - Дмитро, 26 років">
+                        <source src="videos/placeholder.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                
+                <div class="video-item">
+                    <p class="video-text-overlay">"Навчання з Юлією - це завжди цікаво та ефективно." - Катерина, 22 роки</p>
+                    <video class="video-player" controls preload="metadata" data-text="Навчання з Юлією - це завжди цікаво та ефективно. - Катерина, 22 роки">
+                        <source src="videos/placeholder.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+            
+            <button class="hero-button reviews-button" onclick="scrollToContent()">Я хочу два вступних уроки</button>
+        </div>
+    </section>
+
+    <!-- Three Boxes Section (with purple background) -->
+    <section class="three-boxes-section">
+        <div class="container">
+            <main class="main-content">
+                <div class="card">
+                    <h2>About This Site</h2>
+                    <p>This is a simple Hello World website built with HTML, CSS, and JavaScript. It's designed to be responsive and modern.</p>
+                </div>
+                
+                <div class="card">
+                    <h2>Features</h2>
+                    <ul>
+                        <li>Responsive design</li>
+                        <li>Modern UI/UX</li>
+                        <li>Interactive elements</li>
+                        <li>Easy to customize</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h2>Get in Touch</h2>
+                    <p>Feel free to reach out or customize this template for your own projects!</p>
+                    <button class="cta-button" onclick="showMessage()">Click Me!</button>
+                </div>
+            </main>
+        </div>
+    </section>
+
+    <!-- Contact & Reviews Section -->
+    <section class="contact-reviews-section">
+        <div class="contact-reviews-container">
+            <div class="contact-form-container">
+                <h2 class="contact-title">Зв'яжіться з нами</h2>
+                <p class="contact-subtitle">Залиште свої дані, і ми зв'яжемося з вами найближчим часом</p>
+                
+                <form class="contact-form" id="contactForm">
+                    <div class="form-group">
+                        <label for="firstName">Ім'я</label>
+                        <input type="text" id="firstName" name="firstName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Номер телефону</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
+                    
+                    <button type="submit" class="contact-submit-btn">Надіслати</button>
+                </form>
+            </div>
+            
+            <div class="text-reviews-container">
+                <h2 class="text-reviews-title">Відгуки наших студентів</h2>
+                
+                <div class="text-review">
+                    <div class="stars">★★★★★</div>
+                    <p class="review-text">"Юлія - найкращий викладач польської мови! Її методика навчання дуже ефективна та цікава. За короткий час я почав розуміти та говорити польською."</p>
+                    <p class="review-author">- Марія, 25 років</p>
+                </div>
+                
+                <div class="text-review">
+                    <div class="stars">★★★★★</div>
+                    <p class="review-text">"Дякую Юлії за професійний підхід до навчання! Кожен урок був цікавим та корисним. Тепер я впевнено спілкуюся польською мовою."</p>
+                    <p class="review-author">- Андрій, 30 років</p>
+                </div>
+                
+                <div class="text-review">
+                    <div class="stars">★★★★★</div>
+                    <p class="review-text">"Навчання з Юлією перевершило всі мої очікування! Індивідуальний підхід та якісні матеріали допомогли мені швидко досягти результатів."</p>
+                    <p class="review-author">- Олена, 28 років</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <footer class="footer">
+        <p>&copy; 2024 Hello World Website. Built with ❤️</p>
+    </footer>
+    
+    <script src="script.js"></script>
+</body>
+</html>
