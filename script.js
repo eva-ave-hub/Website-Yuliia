@@ -296,16 +296,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Add parallax effect to hero background
-    window.addEventListener('scroll', function() {
-        const scrolled = window.pageYOffset;
-        const hero = document.querySelector('.hero');
-        const rate = scrolled * -0.6; // Increased parallax speed from -0.3 to -0.6
-        
-        if (hero) {
-            hero.style.backgroundPosition = `center ${rate}px`;
-        }
-    });
+    // Add parallax effect to hero background (desktop only)
+    if (window.innerWidth > 768) {
+        window.addEventListener('scroll', function() {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero');
+            const rate = scrolled * -0.6; // Increased parallax speed from -0.3 to -0.6
+            
+            if (hero) {
+                hero.style.backgroundPosition = `center ${rate}px`;
+            }
+        });
+    }
     
     // Add typing effect to title
     const title = document.querySelector('.hero-title');
@@ -453,32 +455,40 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             e.stopPropagation();
             
-            // Check if click is on video controls - if so, don't interfere
+            // Only allow clicks on the play button (::after pseudo-element)
+            // Since we can't directly target ::after, we'll check if click is in the play button area
             const rect = this.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
             const clickY = e.clientY - rect.top;
+            const videoWidth = rect.width;
             const videoHeight = rect.height;
             
-            // Debug info
-            console.log('Video clicked!');
-            console.log('Click Y position:', clickY, 'Video height:', videoHeight);
-            console.log('Video paused state:', this.paused);
-            console.log('Click event target:', e.target);
+            // Define play button area (center area where play button is positioned)
+            const playButtonArea = {
+                left: videoWidth * 0.4,
+                right: videoWidth * 0.6,
+                top: videoHeight * 0.25,
+                bottom: videoHeight * 0.4
+            };
             
-            // If click is in the bottom 20% of video (where controls usually are), don't interfere
-            if (clickY > videoHeight * 0.8) {
-                console.log('Click on controls area - not interfering');
-                return;
-            }
-            
-            // Toggle play/pause for clicks on the main video area
-            if (this.paused) {
-                console.log('Attempting to play video...');
-                this.play().catch(error => {
-                    console.log('Video play failed:', error);
-                });
+            // Check if click is within play button area
+            if (clickX >= playButtonArea.left && clickX <= playButtonArea.right &&
+                clickY >= playButtonArea.top && clickY <= playButtonArea.bottom) {
+                
+                console.log('Play button clicked!');
+                
+                // Toggle play/pause only when play button is clicked
+                if (this.paused) {
+                    console.log('Attempting to play video...');
+                    this.play().catch(error => {
+                        console.log('Video play failed:', error);
+                    });
+                } else {
+                    console.log('Attempting to pause video...');
+                    this.pause();
+                }
             } else {
-                console.log('Attempting to pause video...');
-                this.pause();
+                console.log('Click outside play button area - ignoring');
             }
         });
 
@@ -486,34 +496,17 @@ document.addEventListener('DOMContentLoaded', function() {
         video.addEventListener('touchstart', function(e) {
             // Prevent default touch behavior to avoid conflicts
             e.preventDefault();
+            e.stopPropagation();
             
-            // Add visual feedback
-            this.style.transform = 'scale(0.98)';
+            // No visual feedback or auto-play - just prevent default
         });
 
         video.addEventListener('touchend', function(e) {
-            // Restore normal scale
-            this.style.transform = 'scale(1)';
+            // Prevent any touch-based video interaction
+            e.preventDefault();
+            e.stopPropagation();
             
-            // Get touch position
-            const rect = this.getBoundingClientRect();
-            const touch = e.changedTouches[0];
-            const touchY = touch.clientY - rect.top;
-            const videoHeight = rect.height;
-            
-            // If touch is in the bottom 20% of video (where controls usually are), don't interfere
-            if (touchY > videoHeight * 0.8) {
-                return;
-            }
-            
-            // Toggle play/pause for touches on the main video area
-            if (this.paused) {
-                this.play().catch(error => {
-                    console.log('Video play failed on touch:', error);
-                });
-            } else {
-                this.pause();
-            }
+            // No auto-play on touch - only play button clicks work
         });
 
         // Prevent context menu on long press for mobile
@@ -521,19 +514,8 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
         });
         
-        // Add specific iOS Safari touch handling
-        if ('ontouchstart' in window) {
-            // Mobile device detected
-            video.addEventListener('touchmove', function(e) {
-                // Allow touch scrolling on the video container
-                e.stopPropagation();
-            });
-            
-            // Ensure proper touch event handling
-            video.addEventListener('touchcancel', function(e) {
-                this.style.transform = 'scale(1)';
-            });
-        }
+        // Remove touch-based video interaction
+        // Videos now only play when play button is explicitly clicked
     });
 });
 
