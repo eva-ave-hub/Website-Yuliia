@@ -224,6 +224,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Enhance button scrolling functionality
     enhanceButtonScrolling();
     
+    // Fix mobile video container scrolling
+    fixMobileVideoScrolling();
+    
     // Add scroll progress indicator
     addScrollProgressIndicator();
     
@@ -235,6 +238,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Optimize video loading for better performance
     const videos = document.querySelectorAll('.video-player');
     videos.forEach(video => {
+        // iOS Safari specific fixes
+        video.setAttribute('playsinline', 'true');
+        video.setAttribute('webkit-playsinline', 'true');
+        video.setAttribute('muted', 'true');
+        
         // Only load video when it comes into viewport
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -258,6 +266,35 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 150);
         });
     });
+    
+    // iOS Safari specific video fixes
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    if (isIOS) {
+        // Force iOS Safari to handle videos properly
+        const allVideos = document.querySelectorAll('video');
+        allVideos.forEach(video => {
+            video.setAttribute('playsinline', 'true');
+            video.setAttribute('webkit-playsinline', 'true');
+            video.setAttribute('muted', 'true');
+            video.setAttribute('controls', 'true');
+            
+            // iOS Safari specific event handling
+            video.addEventListener('loadedmetadata', function() {
+                // Ensure video is properly loaded on iOS
+                this.style.display = 'block';
+            });
+            
+            video.addEventListener('error', function(e) {
+                console.log('Video error on iOS:', e);
+                // Fallback for iOS video issues
+                this.style.display = 'none';
+                const fallback = document.createElement('div');
+                fallback.innerHTML = '<p style="color: white; text-align: center; padding: 20px;">Video not available on this device</p>';
+                fallback.style.cssText = 'width: 100%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center;';
+                this.parentNode.appendChild(fallback);
+            });
+        });
+    }
     
     // Add parallax effect to hero background
     window.addEventListener('scroll', function() {
@@ -373,6 +410,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (this.muted === false) {
                 this.muted = true;
             }
+            
+            // iOS Safari specific fixes
+            this.setAttribute('playsinline', 'true');
+            this.setAttribute('webkit-playsinline', 'true');
         });
 
         // Handle mouse enter - prevent overlay from returning while playing
@@ -479,6 +520,20 @@ document.addEventListener('DOMContentLoaded', function() {
         video.addEventListener('contextmenu', function(e) {
             e.preventDefault();
         });
+        
+        // Add specific iOS Safari touch handling
+        if ('ontouchstart' in window) {
+            // Mobile device detected
+            video.addEventListener('touchmove', function(e) {
+                // Allow touch scrolling on the video container
+                e.stopPropagation();
+            });
+            
+            // Ensure proper touch event handling
+            video.addEventListener('touchcancel', function(e) {
+                this.style.transform = 'scale(1)';
+            });
+        }
     });
 });
 
@@ -516,6 +571,40 @@ function enhanceButtonScrolling() {
             scrollToSection('.contact-form-container');
         });
     });
+}
+
+// Fix mobile video container scrolling
+function fixMobileVideoScrolling() {
+    const videosContainer = document.querySelector('.videos-container');
+    if (!videosContainer) return;
+    
+    // Detect mobile devices
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+        // Prevent default touch behavior that might interfere with scrolling
+        videosContainer.addEventListener('touchstart', function(e) {
+            // Allow touch events to bubble for proper scrolling
+            e.stopPropagation();
+        }, { passive: true });
+        
+        // Ensure smooth scrolling on mobile
+        videosContainer.addEventListener('touchmove', function(e) {
+            // Allow touch scrolling
+            e.stopPropagation();
+        }, { passive: true });
+        
+        // Prevent any touch events from being treated as clicks
+        videosContainer.addEventListener('touchend', function(e) {
+            e.stopPropagation();
+        }, { passive: true });
+        
+        // iOS Safari specific fixes
+        if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+            videosContainer.style.webkitOverflowScrolling = 'touch';
+            videosContainer.style.webkitTapHighlightColor = 'transparent';
+        }
+    }
 }
 
 // Add CSS animation for the notification

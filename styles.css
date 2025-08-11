@@ -101,13 +101,51 @@ body {
     background-image: url('./images/hero-background.jpg'); /* Put your image in the images folder */
     background-size: cover;
     background-position: center;
-    background-attachment: fixed; /* This creates the parallax effect */
+    background-attachment: scroll; /* Changed from fixed to scroll for iOS compatibility */
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     color: white;
+    /* iOS Safari specific fixes */
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+}
+
+/* iOS Safari specific hero background fix */
+@supports (-webkit-touch-callout: none) {
+    .hero {
+        background-attachment: scroll;
+        background-size: cover;
+        background-position: center;
+        /* Force background image to load on iOS */
+        background-image: url('./images/hero-background.jpg') !important;
+    }
+}
+
+/* Ensure hero image loads on iOS */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+    .hero {
+        background-image: url('./images/hero-background.jpg');
+        background-size: cover;
+        background-position: center;
+    }
+}
+
+/* Additional iOS Safari fixes for hero section */
+@supports (-webkit-touch-callout: none) and (max-width: 768px) {
+    .hero {
+        background-image: url('./images/hero-background.jpg') !important;
+        background-size: cover !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
+        /* Ensure proper display on iOS Safari */
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+    }
 }
 
 .hero-overlay {
@@ -315,6 +353,17 @@ body {
     margin-bottom: 60px;
     will-change: scroll-position; /* Optimize scrolling performance */
     contain: layout style paint; /* Improve rendering performance */
+    /* Mobile touch scrolling fixes */
+    touch-action: pan-x;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    /* Prevent iOS Safari from treating as a press */
+    -webkit-tap-highlight-color: transparent;
+    /* Ensure smooth scrolling on all devices */
+    scrollbar-width: thin;
+    scrollbar-color: #667eea transparent;
 }
 
 /* Ensure the button stays within the reviews section */
@@ -425,6 +474,11 @@ body {
     will-change: transform; /* Optimize for animations */
     backface-visibility: hidden; /* Reduce GPU usage */
     transform: translateZ(0); /* Force hardware acceleration */
+    /* iOS Safari specific fixes */
+    -webkit-transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    /* Ensure proper video display on iOS */
+    object-fit: cover;
 }
 
 .video-player::before {
@@ -441,11 +495,11 @@ body {
     z-index: 1;
 }
 
-/* Add play icon overlay when video is paused */
+/* Add play icon overlay when video is paused - positioned to avoid text overlap */
 .video-player:not(.playing)::after {
     content: '▶';
     position: absolute;
-    top: 50%;
+    top: 33.33%; /* Changed from 50% to 33.33% (1/3 down) to avoid text overlap */
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 3rem;
@@ -499,7 +553,7 @@ body {
     color: white;
     text-align: center;
     position: absolute;
-    top: 50%;
+    top: 66.67%; /* Changed from 50% to 66.67% (2/3 down) */
     left: 50%;
     transform: translate(-50%, -50%);
     width: 90%;
@@ -786,6 +840,89 @@ body {
     /* Move video boxes up by 20px on mobile */
     .video-item {
         margin-top: -20px;
+    }
+
+    /* iOS Safari specific fixes */
+    @supports (-webkit-touch-callout: none) {
+        .video-player {
+            -webkit-transform: translateZ(0);
+            -webkit-backface-visibility: hidden;
+            /* Ensure videos play properly on iOS */
+            -webkit-playsinline: true;
+            playsinline: true;
+        }
+        
+        .videos-container {
+            -webkit-overflow-scrolling: touch;
+            /* Prevent iOS Safari from treating scroll as press */
+            -webkit-tap-highlight-color: transparent;
+            /* Ensure proper touch scrolling */
+            touch-action: pan-x;
+        }
+    }
+
+    /* Android specific fixes */
+    @media screen and (-webkit-min-device-pixel-ratio: 0) and (max-width: 768px) {
+        .video-player {
+            /* Ensure proper video display on Android */
+            object-fit: cover;
+            /* Prevent Android Chrome from interfering with touch events */
+            touch-action: manipulation;
+        }
+        
+        .videos-container {
+            /* Ensure smooth scrolling on Android */
+            -webkit-overflow-scrolling: touch;
+            /* Prevent Android from treating scroll as press */
+            -webkit-tap-highlight-color: transparent;
+        }
+    }
+}
+
+/* Additional mobile video fixes */
+@media (max-width: 768px) {
+    .video-player {
+        /* Ensure proper video display on mobile */
+        width: 100%;
+        max-width: 280px;
+        height: auto;
+        min-height: 400px;
+        /* Mobile-specific video controls */
+        -webkit-media-controls: auto;
+        -webkit-media-controls-panel: auto;
+        /* Ensure proper touch interaction */
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+    }
+    
+    .videos-container {
+        /* Improve mobile scrolling */
+        scroll-snap-type: x mandatory;
+        scroll-padding: 20px;
+        /* Ensure proper touch scrolling */
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-x;
+    }
+    
+    .video-item {
+        scroll-snap-align: start;
+        /* Ensure proper spacing on mobile */
+        margin-right: 15px;
+    }
+    
+    /* Adjust text overlay positioning for mobile */
+    .video-text-overlay {
+        font-size: 0.85rem;
+        line-height: 1.2;
+        width: 92%;
+        /* Ensure text is readable on mobile */
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+    }
+    
+    /* Adjust play button positioning for mobile */
+    .video-player:not(.playing)::after {
+        font-size: 2.5rem;
+        top: 30%; /* Slightly higher on mobile to avoid text overlap */
     }
 }
 
