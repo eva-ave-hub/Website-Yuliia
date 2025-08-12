@@ -224,8 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Enhance button scrolling functionality
     enhanceButtonScrolling();
     
-    // Fix mobile video container scrolling
-    fixMobileVideoScrolling();
+
     
     // Add scroll progress indicator
     addScrollProgressIndicator();
@@ -234,9 +233,6 @@ document.addEventListener('DOMContentLoaded', function() {
     addScrollToTopButton();
     
     const cards = document.querySelectorAll('.card');
-    
-    // YouTube embeds are now used instead of HTML5 videos
-    // No need for video optimization or iOS fixes
     
     // Add click effect to cards
     cards.forEach(card => {
@@ -247,9 +243,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 150);
         });
     });
-    
-    // YouTube embeds are now used instead of HTML5 videos
-    // No need for iOS Safari video fixes
     
     // Add parallax effect to hero background (desktop only)
     let parallaxEnabled = window.innerWidth > 768;
@@ -262,11 +255,11 @@ document.addEventListener('DOMContentLoaded', function() {
             parallaxEnabled = newParallaxEnabled;
             
             if (parallaxEnabled && !parallaxHandler) {
-                // Enable parallax on desktop
+                // Enable subtle parallax on desktop with moderate rate
                 parallaxHandler = function() {
                     const scrolled = window.pageYOffset;
                     const hero = document.querySelector('.hero');
-                    const rate = scrolled * -0.6;
+                    const rate = scrolled * -0.15; // Moderate rate for visible but smooth effect
                     
                     if (hero) {
                         hero.style.backgroundPosition = `center ${rate}px`;
@@ -274,7 +267,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
                 
                 window.addEventListener('scroll', parallaxHandler);
-                console.log('Parallax enabled');
+                console.log('Parallax enabled with balanced rate');
             } else if (!parallaxEnabled && parallaxHandler) {
                 // Disable parallax on mobile
                 window.removeEventListener('scroll', parallaxHandler);
@@ -300,7 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
         parallaxHandler = function() {
             const scrolled = window.pageYOffset;
             const hero = document.querySelector('.hero');
-            const rate = scrolled * -0.6;
+            const rate = scrolled * -0.15; // Moderate rate for visible but smooth effect
             
             if (hero) {
                 hero.style.backgroundPosition = `center ${rate}px`;
@@ -308,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         
         window.addEventListener('scroll', parallaxHandler);
-        console.log('Parallax enabled on initial load');
+        console.log('Parallax enabled on initial load with balanced rate');
     } else {
         // Ensure hero background is locked on mobile
         const hero = document.querySelector('.hero');
@@ -383,8 +376,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Start typing effect after a short delay
     setTimeout(typeWriter, 500);
     
-    // YouTube embeds are now used instead of HTML5 videos
-    // No need for complex video event handling
+
 });
 
 // Add smooth scrolling for better UX
@@ -423,39 +415,7 @@ function enhanceButtonScrolling() {
     });
 }
 
-// Fix mobile video container scrolling
-function fixMobileVideoScrolling() {
-    const videosContainer = document.querySelector('.videos-container');
-    if (!videosContainer) return;
-    
-    // Detect mobile devices
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    if (isMobile) {
-        // Prevent default touch behavior that might interfere with scrolling
-        videosContainer.addEventListener('touchstart', function(e) {
-            // Allow touch events to bubble for proper scrolling
-            e.stopPropagation();
-        }, { passive: true });
-        
-        // Ensure smooth scrolling on mobile
-        videosContainer.addEventListener('touchmove', function(e) {
-            // Allow touch scrolling
-            e.stopPropagation();
-        }, { passive: true });
-        
-        // Prevent any touch events from being treated as clicks
-        videosContainer.addEventListener('touchend', function(e) {
-            e.stopPropagation();
-        }, { passive: true });
-        
-        // iOS Safari specific fixes
-        if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-            videosContainer.style.webkitOverflowScrolling = 'touch';
-            videosContainer.style.webkitTapHighlightColor = 'transparent';
-        }
-    }
-}
+
 
 // Add CSS animation for the notification
 const style = document.createElement('style');
@@ -489,6 +449,16 @@ style.textContent = `
         box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
     }
     
+    .valid {
+        border-color: #28a745 !important;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.15) !important;
+    }
+    
+    .valid:focus {
+        border-color: #28a745 !important;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25) !important;
+    }
+    
     .form-field {
         position: relative;
         margin-bottom: 20px;
@@ -507,8 +477,118 @@ style.textContent = `
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(220, 53, 69, 0.2);
     }
+    
+    .form-field input.valid:focus {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(40, 167, 69, 0.2);
+    }
 `;
 document.head.appendChild(style);
+
+// Video Carousel Functionality
+let currentCarouselPosition = 0;
+const carousel = document.querySelector('.video-carousel');
+const videoItems = document.querySelectorAll('.video-item');
+const prevBtn = document.querySelector('.prev-btn');
+const nextBtn = document.querySelector('.next-btn');
+
+function moveCarousel(direction) {
+    if (!carousel) return;
+    
+    const itemWidth = 320 + 30; // video item width + gap
+    const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+    
+    if (direction === 1) {
+        // Move right
+        currentCarouselPosition = Math.min(currentCarouselPosition + itemWidth, maxScroll);
+    } else {
+        // Move left
+        currentCarouselPosition = Math.max(currentCarouselPosition - itemWidth, 0);
+    }
+    
+    carousel.scrollTo({
+        left: currentCarouselPosition,
+        behavior: 'smooth'
+    });
+    
+    // Update button states
+    updateCarouselButtons();
+}
+
+function updateCarouselButtons() {
+    if (!prevBtn || !nextBtn) return;
+    
+    const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+    
+    prevBtn.disabled = currentCarouselPosition <= 0;
+    nextBtn.disabled = currentCarouselPosition >= maxScroll;
+}
+
+// Auto-scroll carousel on touch/swipe for mobile
+function setupCarouselTouch() {
+    if (!carousel) return;
+    
+    let startX = 0;
+    let startY = 0;
+    let isScrolling = false;
+    
+    carousel.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        isScrolling = false;
+    });
+    
+    carousel.addEventListener('touchmove', (e) => {
+        if (!isScrolling) {
+            const deltaX = Math.abs(e.touches[0].clientX - startX);
+            const deltaY = Math.abs(e.touches[0].clientY - startY);
+            
+            if (deltaX > deltaY && deltaX > 10) {
+                isScrolling = true;
+            }
+        }
+    });
+    
+    carousel.addEventListener('touchend', (e) => {
+        if (isScrolling) {
+            const endX = e.changedTouches[0].clientX;
+            const deltaX = startX - endX;
+            
+            if (Math.abs(deltaX) > 50) {
+                if (deltaX > 0) {
+                    moveCarousel(1); // Swipe left - move right
+                } else {
+                    moveCarousel(-1); // Swipe right - move left
+                }
+            }
+        }
+    });
+}
+
+// Initialize carousel when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    setupCarouselTouch();
+    
+    // Update button states initially
+    setTimeout(updateCarouselButtons, 100);
+    
+    // Update button states on scroll
+    if (carousel) {
+        carousel.addEventListener('scroll', () => {
+            currentCarouselPosition = carousel.scrollLeft;
+            updateCarouselButtons();
+        });
+    }
+});
+
+// Keyboard navigation for carousel
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') {
+        moveCarousel(-1);
+    } else if (e.key === 'ArrowRight') {
+        moveCarousel(1);
+    }
+});
 
 // Custom Form Handling with Google Apps Script
 document.addEventListener('DOMContentLoaded', function() {
@@ -598,8 +678,8 @@ function validateFieldInRealTime(field, fieldType) {
     const value = field.value.trim();
     const errorElement = field.parentNode.querySelector('.field-error');
     
-    // Remove existing error styling
-    field.classList.remove('error');
+    // Remove existing error and success styling
+    field.classList.remove('error', 'valid');
     
     // Clear existing error message
     if (errorElement) {
@@ -656,7 +736,83 @@ function validateFieldInRealTime(field, fieldType) {
             break;
     }
     
-    // Apply validation styling and show error message
+    // Only apply validation styling and show error message if field is invalid
+    // AND has content (not empty)
+    if (!isValid && value.length > 0) {
+        field.classList.add('error');
+        showFieldError(field, errorMessage);
+    } else if (isValid && value.length > 0) {
+        // Add subtle success styling for valid fields
+        field.classList.add('valid');
+    }
+    
+    return isValid;
+}
+
+// Function to validate fields on form submission (always shows errors)
+function validateFieldOnSubmit(field, fieldType) {
+    const value = field.value.trim();
+    const errorElement = field.parentNode.querySelector('.field-error');
+    
+    // Remove existing error and success styling
+    field.classList.remove('error', 'valid');
+    
+    // Clear existing error message
+    if (errorElement) {
+        errorElement.remove();
+    }
+    
+    let isValid = true;
+    let errorMessage = '';
+    
+    switch (fieldType) {
+        case 'firstName':
+            if (!value) {
+                isValid = false;
+                errorMessage = 'Будь ласка, введіть ваше ім\'я.';
+            } else if (value.length < 2) {
+                isValid = false;
+                errorMessage = 'Ім\'я має бути не менше 2 символів.';
+            } else if (value.length > 50) {
+                isValid = false;
+                errorMessage = 'Ім\'я має бути не більше 50 символів.';
+            } else if (!/^[a-zA-Zа-яА-ЯіІїЇєЄ'\s\-\.]+$/.test(value)) {
+                isValid = false;
+                errorMessage = 'Ім\'я містить недозволені символи.';
+            }
+            break;
+            
+        case 'email':
+            if (!value) {
+                isValid = false;
+                errorMessage = 'Будь ласка, введіть ваш email.';
+            } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
+                isValid = false;
+                errorMessage = 'Будь ласка, введіть коректний email адрес.';
+            } else if (value.length > 254) {
+                isValid = false;
+                errorMessage = 'Email адрес занадто довгий.';
+            }
+            break;
+            
+        case 'phone':
+            if (!value) {
+                isValid = false;
+                errorMessage = 'Будь ласка, введіть ваш номер телефону.';
+            } else {
+                const cleanPhone = value.replace(/\D/g, '');
+                if (cleanPhone.length < 7 || cleanPhone.length > 15) {
+                    isValid = false;
+                    errorMessage = 'Номер телефону має бути від 7 до 15 цифр.';
+                } else if (!/^[\+]?[0-9\s\-\(\)\.]+$/.test(value)) {
+                    isValid = false;
+                    errorMessage = 'Номер телефону містить недозволені символи.';
+                }
+            }
+            break;
+    }
+    
+    // Always apply validation styling and show error message on form submission
     if (!isValid) {
         field.classList.add('error');
         showFieldError(field, errorMessage);
@@ -683,13 +839,16 @@ function showFieldError(field, message) {
     field.parentNode.appendChild(errorElement);
 }
 
-// Function to clear all field errors
+// Function to clear all field errors and success states
 function clearAllFieldErrors() {
     const errorElements = document.querySelectorAll('.field-error');
     errorElements.forEach(error => error.remove());
     
     const errorFields = document.querySelectorAll('.error');
     errorFields.forEach(field => field.classList.remove('error'));
+    
+    const validFields = document.querySelectorAll('.valid');
+    validFields.forEach(field => field.classList.remove('valid'));
 }
 
 // Function to enhance form fields with better UX
@@ -839,28 +998,37 @@ function setupFormValidation() {
         phone: contactForm.querySelector('input[name="phone"]')
     };
     
-    // Add real-time validation to each field
+    // Add validation to each field - only show errors after blur and if invalid
     Object.entries(fields).forEach(([fieldType, field]) => {
         if (field) {
-            // Validate on blur (when user leaves the field)
-            field.addEventListener('blur', () => {
-                validateFieldInRealTime(field, fieldType);
-            });
+            // Track if field has been touched (user has interacted with it)
+            let fieldTouched = false;
             
-            // Validate on input (as user types)
+            // Mark field as touched when user starts typing
             field.addEventListener('input', () => {
-                // Clear error styling while typing
-                field.classList.remove('error');
+                fieldTouched = true;
+                // Clear error and success styling while typing
+                field.classList.remove('error', 'valid');
                 const errorElement = field.parentNode.querySelector('.field-error');
                 if (errorElement) {
                     errorElement.remove();
                 }
             });
             
-            // Validate on keyup (for immediate feedback)
-            field.addEventListener('keyup', () => {
-                if (field.value.trim().length > 0) {
+            // Only validate and show errors on blur if field has been touched
+            field.addEventListener('blur', () => {
+                if (fieldTouched) {
                     validateFieldInRealTime(field, fieldType);
+                }
+            });
+            
+            // Don't validate on keyup anymore - only clear errors while typing
+            field.addEventListener('keyup', () => {
+                // Just clear errors and success styling while typing, don't validate
+                field.classList.remove('error', 'valid');
+                const errorElement = field.parentNode.querySelector('.field-error');
+                if (errorElement) {
+                    errorElement.remove();
                 }
             });
         }
@@ -893,10 +1061,10 @@ function setupFormValidation() {
         const email = formData.get('email');
         const phone = formData.get('phone');
         
-        // Validate all fields
-        const firstNameValid = validateFieldInRealTime(fields.firstName, 'firstName');
-        const emailValid = validateFieldInRealTime(fields.email, 'email');
-        const phoneValid = validateFieldInRealTime(fields.phone, 'phone');
+        // Validate all fields - force validation even for untouched fields on form submission
+        const firstNameValid = validateFieldOnSubmit(fields.firstName, 'firstName');
+        const emailValid = validateFieldOnSubmit(fields.email, 'email');
+        const phoneValid = validateFieldOnSubmit(fields.phone, 'phone');
         
         // If any field is invalid, stop submission
         if (!firstNameValid || !emailValid || !phoneValid) {
