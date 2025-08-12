@@ -235,27 +235,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const cards = document.querySelectorAll('.card');
     
-    // Optimize video loading for better performance
-    const videos = document.querySelectorAll('.video-player');
-    videos.forEach(video => {
-        // iOS Safari specific fixes
-        video.setAttribute('playsinline', 'true');
-        video.setAttribute('webkit-playsinline', 'true');
-        video.setAttribute('muted', 'true');
-        
-        // Only load video when it comes into viewport
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    // Video is visible, preload metadata only
-                    video.preload = 'metadata';
-                    observer.unobserve(video);
-                }
-            });
-        }, { threshold: 0.1 });
-        
-        observer.observe(video);
-    });
+    // YouTube embeds are now used instead of HTML5 videos
+    // No need for video optimization or iOS fixes
     
     // Add click effect to cards
     cards.forEach(card => {
@@ -267,47 +248,99 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // iOS Safari specific video fixes
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    if (isIOS) {
-        // Force iOS Safari to handle videos properly
-        const allVideos = document.querySelectorAll('video');
-        allVideos.forEach(video => {
-            video.setAttribute('playsinline', 'true');
-            video.setAttribute('webkit-playsinline', 'true');
-            video.setAttribute('muted', 'true');
-            video.setAttribute('controls', 'true');
-            
-            // iOS Safari specific event handling
-            video.addEventListener('loadedmetadata', function() {
-                // Ensure video is properly loaded on iOS
-                this.style.display = 'block';
-            });
-            
-            video.addEventListener('error', function(e) {
-                console.log('Video error on iOS:', e);
-                // Fallback for iOS video issues
-                this.style.display = 'none';
-                const fallback = document.createElement('div');
-                fallback.innerHTML = '<p style="color: white; text-align: center; padding: 20px;">Video not available on this device</p>';
-                fallback.style.cssText = 'width: 100%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center;';
-                this.parentNode.appendChild(fallback);
-            });
-        });
-    }
+    // YouTube embeds are now used instead of HTML5 videos
+    // No need for iOS Safari video fixes
     
     // Add parallax effect to hero background (desktop only)
+    let parallaxEnabled = window.innerWidth > 768;
+    let parallaxHandler = null;
+    
+    function updateParallax() {
+        const newParallaxEnabled = window.innerWidth > 768;
+        
+        if (newParallaxEnabled !== parallaxEnabled) {
+            parallaxEnabled = newParallaxEnabled;
+            
+            if (parallaxEnabled && !parallaxHandler) {
+                // Enable parallax on desktop
+                parallaxHandler = function() {
+                    const scrolled = window.pageYOffset;
+                    const hero = document.querySelector('.hero');
+                    const rate = scrolled * -0.6;
+                    
+                    if (hero) {
+                        hero.style.backgroundPosition = `center ${rate}px`;
+                    }
+                };
+                
+                window.addEventListener('scroll', parallaxHandler);
+                console.log('Parallax enabled');
+            } else if (!parallaxEnabled && parallaxHandler) {
+                // Disable parallax on mobile
+                window.removeEventListener('scroll', parallaxHandler);
+                parallaxHandler = null;
+                
+                // Reset hero background position and lock it
+                const hero = document.querySelector('.hero');
+                if (hero) {
+                    hero.style.backgroundPosition = 'center center';
+                    hero.style.backgroundAttachment = 'scroll';
+                    // Force the background to stay in place
+                    hero.style.setProperty('background-position', 'center center', 'important');
+                    hero.style.setProperty('background-attachment', 'scroll', 'important');
+                }
+                console.log('Parallax disabled');
+            }
+        }
+    }
+    
+    // Initial setup - ensure parallax is enabled if we're on desktop
     if (window.innerWidth > 768) {
-        window.addEventListener('scroll', function() {
+        parallaxEnabled = true;
+        parallaxHandler = function() {
             const scrolled = window.pageYOffset;
             const hero = document.querySelector('.hero');
-            const rate = scrolled * -0.6; // Increased parallax speed from -0.3 to -0.6
+            const rate = scrolled * -0.6;
             
             if (hero) {
                 hero.style.backgroundPosition = `center ${rate}px`;
             }
-        });
+        };
+        
+        window.addEventListener('scroll', parallaxHandler);
+        console.log('Parallax enabled on initial load');
+    } else {
+        // Ensure hero background is locked on mobile
+        const hero = document.querySelector('.hero');
+        if (hero) {
+            hero.style.backgroundPosition = 'center center';
+            hero.style.backgroundAttachment = 'scroll';
+            // Force the background to stay in place
+            hero.style.setProperty('background-position', 'center center', 'important');
+            hero.style.setProperty('background-attachment', 'scroll', 'important');
+        }
+        console.log('Hero background locked on mobile');
     }
+    
+    // Handle window resize
+    window.addEventListener('resize', updateParallax);
+    
+    // Cleanup function to ensure proper state
+    function cleanupParallax() {
+        if (parallaxHandler) {
+            window.removeEventListener('scroll', parallaxHandler);
+            parallaxHandler = null;
+        }
+        
+        // Always reset hero background when cleaning up
+        const hero = document.querySelector('.hero');
+        if (hero) {
+            hero.style.backgroundPosition = 'center center';
+        }
+    }
+    
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', cleanupParallax);
     
     // Add typing effect to title
     const title = document.querySelector('.hero-title');
@@ -350,173 +383,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Start typing effect after a short delay
     setTimeout(typeWriter, 500);
     
-    // Add video click functionality for fade-out effects
-    const videoPlayers = document.querySelectorAll('.video-player');
-    videoPlayers.forEach(video => {
-        const videoItem = video.closest('.video-item');
-        const textOverlay = videoItem.querySelector('.video-text-overlay');
-        
-        // Handle play event
-        video.addEventListener('play', function() {
-            // Add playing class to video
-            this.classList.add('playing');
-            // Fade out the text overlay
-            if (textOverlay) {
-                textOverlay.style.opacity = '0';
-            }
-            
-            // Try to unmute the video after it starts playing (for mobile autoplay compliance)
-            if (this.muted) {
-                // Small delay to ensure play has started
-                setTimeout(() => {
-                    this.muted = false;
-                }, 100);
-            }
-        });
-        
-        // Handle pause event
-        video.addEventListener('pause', function() {
-            // Remove playing class from video
-            this.classList.remove('playing');
-            // Fade in the text overlay
-            if (textOverlay) {
-                textOverlay.style.opacity = '1';
-            }
-        });
-        
-        // Handle ended event
-        video.addEventListener('ended', function() {
-            // Remove playing class from video
-            this.classList.remove('playing');
-            // Fade in the text overlay
-            if (textOverlay) {
-                textOverlay.style.opacity = '1';
-            }
-        });
-
-        // Handle loadstart event to ensure proper initial state
-        video.addEventListener('loadstart', function() {
-            // Ensure video starts in paused state
-            this.classList.remove('playing');
-            if (textOverlay) {
-                textOverlay.style.opacity = '1';
-            }
-        });
-
-        // Handle canplay event to ensure video is ready
-        video.addEventListener('canplay', function() {
-            // Video is ready to play
-            console.log('Video ready to play');
-            
-            // On mobile, ensure video is muted by default to comply with autoplay policies
-            if (this.muted === false) {
-                this.muted = true;
-            }
-            
-            // iOS Safari specific fixes
-            this.setAttribute('playsinline', 'true');
-            this.setAttribute('webkit-playsinline', 'true');
-        });
-
-        // Handle mouse enter - prevent overlay from returning while playing
-        video.addEventListener('mouseenter', function() {
-            // If video is playing, ensure overlay stays hidden
-            if (this.classList.contains('playing')) {
-                this.classList.add('playing');
-                if (textOverlay) {
-                    textOverlay.style.opacity = '0';
-                }
-            }
-        });
-
-        // Handle mouse leave - restore overlay if video is paused
-        video.addEventListener('mouseleave', function() {
-            // If video is paused, ensure overlay is visible
-            if (!this.classList.contains('playing')) {
-                this.classList.remove('playing');
-                if (textOverlay) {
-                    textOverlay.style.opacity = '1';
-                }
-            }
-        });
-
-        // Add mousedown event for better desktop click handling
-        video.addEventListener('mousedown', function(e) {
-            // Prevent default behavior
-            e.preventDefault();
-            e.stopPropagation();
-            
-            console.log('Video mousedown detected');
-        });
-
-        // Add click functionality for mobile - click anywhere on video to play/pause
-        video.addEventListener('click', function(e) {
-            // Prevent any default behavior
-            e.preventDefault();
-            e.stopPropagation();
-            
-            // Only allow clicks on the play button (::after pseudo-element)
-            // Since we can't directly target ::after, we'll check if click is in the play button area
-            const rect = this.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const clickY = e.clientY - rect.top;
-            const videoWidth = rect.width;
-            const videoHeight = rect.height;
-            
-            // Define play button area (center area where play button is positioned)
-            const playButtonArea = {
-                left: videoWidth * 0.4,
-                right: videoWidth * 0.6,
-                top: videoHeight * 0.25,
-                bottom: videoHeight * 0.4
-            };
-            
-            // Check if click is within play button area
-            if (clickX >= playButtonArea.left && clickX <= playButtonArea.right &&
-                clickY >= playButtonArea.top && clickY <= playButtonArea.bottom) {
-                
-                console.log('Play button clicked!');
-                
-                // Toggle play/pause only when play button is clicked
-                if (this.paused) {
-                    console.log('Attempting to play video...');
-                    this.play().catch(error => {
-                        console.log('Video play failed:', error);
-                    });
-                } else {
-                    console.log('Attempting to pause video...');
-                    this.pause();
-                }
-            } else {
-                console.log('Click outside play button area - ignoring');
-            }
-        });
-
-        // Add touch event handling for better mobile interaction
-        video.addEventListener('touchstart', function(e) {
-            // Prevent default touch behavior to avoid conflicts
-            e.preventDefault();
-            e.stopPropagation();
-            
-            // No visual feedback or auto-play - just prevent default
-        });
-
-        video.addEventListener('touchend', function(e) {
-            // Prevent any touch-based video interaction
-            e.preventDefault();
-            e.stopPropagation();
-            
-            // No auto-play on touch - only play button clicks work
-        });
-
-        // Prevent context menu on long press for mobile
-        video.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-        });
-        
-        // Remove touch-based video interaction
-        // Videos now only play when play button is explicitly clicked
-    });
+    // YouTube embeds are now used instead of HTML5 videos
+    // No need for complex video event handling
 });
 
 // Add smooth scrolling for better UX

@@ -462,111 +462,13 @@ body {
     opacity: 0.9;
 }
 
-/* Video player styles */
-.video-player {
-    width: 280px;
-    height: 497px; /* 9:16 aspect ratio - perfect for mobile videos */
-    border-radius: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    background: #000;
-    position: relative;
-    cursor: default; /* Changed from pointer to default */
-    -webkit-tap-highlight-color: rgba(0,0,0,0.1);
-    touch-action: manipulation;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    z-index: 1; /* Ensure video is clickable */
-    will-change: transform; /* Optimize for animations */
-    backface-visibility: hidden; /* Reduce GPU usage */
-    transform: translateZ(0); /* Force hardware acceleration */
-    /* iOS Safari specific fixes */
-    -webkit-transform: translateZ(0);
-    -webkit-backface-visibility: hidden;
-    /* Ensure proper video display on iOS */
-    object-fit: cover;
-    /* Disable click-to-play functionality */
-    pointer-events: none;
-}
+/* Video player styles - REMOVED (replaced with YouTube embeds) */
 
-.video-player::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 20px;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-    z-index: 1;
-}
+/* Video player styles - REMOVED (replaced with YouTube embeds) */
 
-/* Add play icon overlay when video is paused - positioned to avoid text overlap */
-.video-player:not(.playing)::after {
-    content: '▶';
-    position: absolute;
-    top: 33.33%; /* Changed from 50% to 33.33% (1/3 down) to avoid text overlap */
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 3rem;
-    color: white;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
-    opacity: 0.8;
-    transition: opacity 0.3s ease;
-    pointer-events: auto; /* Make play button clickable */
-    z-index: 3; /* Above text overlay but doesn't block clicks */
-    cursor: pointer; /* Show pointer cursor on play button */
-    /* Add hover effect for desktop */
-    transition: all 0.3s ease;
-}
+/* Video player styles - REMOVED (replaced with YouTube embeds) */
 
-/* Play button hover effect */
-.video-player:not(.playing)::after:hover {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1.1);
-}
-
-/* Hide play icon when video is playing */
-.video-player.playing::after {
-    opacity: 0;
-    visibility: hidden;
-}
-
-
-.video-player:hover:not(.playing) {
-    transform: translateY(-10px);
-    box-shadow: 0 30px 60px rgba(0,0,0,0.15);
-}
-
-/* Custom video controls styling */
-.video-player::-webkit-media-controls {
-    background: rgba(0,0,0,0.7);
-    border-radius: 20px;
-}
-
-.video-player::-webkit-media-controls-panel {
-    background: rgba(0,0,0,0.7);
-}
-
-/* Fallback for unsupported video formats */
-.video-player:not([src])::before {
-    content: "Video not supported in this browser";
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    color: white;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 20px;
-    font-size: 1rem;
-    text-align: center;
-    padding: 20px;
-}
+/* Video player styles - REMOVED (replaced with YouTube embeds) */
 
 .video-text-overlay {
     font-size: 1rem;
@@ -586,6 +488,13 @@ body {
 
 .video-item:hover .video-text-overlay {
     transform: translate(-50%, -80%);
+}
+
+/* Disable text overlay hover effect on mobile */
+@media (max-width: 768px) {
+    .video-item:hover .video-text-overlay {
+        transform: translate(-50%, -50%);
+    }
 }
 
 /* Ensure overlay stays hidden when video is playing, even on hover */
@@ -862,61 +771,30 @@ body {
         margin-top: -20px;
     }
 
-    /* iOS Safari specific fixes */
-    @supports (-webkit-touch-callout: none) {
-        .video-player {
-            -webkit-transform: translateZ(0);
-            -webkit-backface-visibility: hidden;
-            /* Ensure videos play properly on iOS */
-            -webkit-playsinline: true;
-            playsinline: true;
-        }
-        
-        .videos-container {
-            -webkit-overflow-scrolling: touch;
-            /* Prevent iOS Safari from treating scroll as press */
-            -webkit-tap-highlight-color: transparent;
-            /* Ensure proper touch scrolling */
-            touch-action: pan-x;
-        }
-    }
-
-    /* Android specific fixes */
-    @media screen and (-webkit-min-device-pixel-ratio: 0) and (max-width: 768px) {
-        .video-player {
-            /* Ensure proper video display on Android */
-            object-fit: cover;
-            /* Prevent Android Chrome from interfering with touch events */
-            touch-action: manipulation;
-        }
-        
-        .videos-container {
-            /* Ensure smooth scrolling on Android */
-            -webkit-overflow-scrolling: touch;
-            /* Prevent Android from treating scroll as press */
-            -webkit-tap-highlight-color: transparent;
-        }
+    /* iOS Safari specific fixes for YouTube embeds */
+@supports (-webkit-touch-callout: none) {
+    .videos-container {
+        -webkit-overflow-scrolling: touch;
+        /* Prevent iOS Safari from treating scroll as press */
+        -webkit-tap-highlight-color: transparent;
+        /* Ensure proper touch scrolling */
+        touch-action: pan-x;
     }
 }
 
-/* Additional mobile video fixes */
-@media (max-width: 768px) {
-    .video-player {
-        /* Ensure proper video display on mobile */
-        width: 100%;
-        max-width: 280px;
-        height: auto;
-        min-height: 400px;
-        /* Mobile-specific video controls */
-        -webkit-media-controls: auto;
-        -webkit-media-controls-panel: auto;
-        /* Ensure proper touch interaction */
-        touch-action: manipulation;
+/* Android specific fixes for YouTube embeds */
+@media screen and (-webkit-min-device-pixel-ratio: 0) and (max-width: 768px) {
+    .videos-container {
+        /* Ensure smooth scrolling on Android */
+        -webkit-overflow-scrolling: touch;
+        /* Prevent Android from treating scroll as press */
         -webkit-tap-highlight-color: transparent;
-        /* Disable all video interaction except play button */
-        pointer-events: none;
     }
-    
+}
+}
+
+/* Mobile responsive YouTube embeds */
+@media (max-width: 768px) {
     .videos-container {
         /* Improve mobile scrolling */
         scroll-snap-type: x mandatory;
@@ -924,8 +802,6 @@ body {
         /* Ensure proper touch scrolling */
         -webkit-overflow-scrolling: touch;
         touch-action: pan-x;
-        /* Allow scrolling interaction */
-        pointer-events: auto;
     }
     
     .video-item {
@@ -941,25 +817,6 @@ body {
         width: 92%;
         /* Ensure text is readable on mobile */
         text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
-    }
-    
-    /* Adjust play button positioning for mobile */
-    .video-player:not(.playing)::after {
-        font-size: 2.5rem;
-        top: 30%; /* Slightly higher on mobile to avoid text overlap */
-        /* Ensure play button is clickable on mobile */
-        pointer-events: auto;
-        cursor: pointer;
-        /* Make play button more prominent on mobile */
-        background: rgba(0,0,0,0.3);
-        border-radius: 50%;
-        width: 80px;
-        height: 80px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        /* Center the play icon */
-        transform: translate(-50%, -50%);
     }
 }
 
@@ -1401,5 +1258,76 @@ body {
     
     .three-boxes-section .card {
         padding: 20px;
+    }
+}
+
+/* YouTube embed styles */
+.youtube-embed {
+    width: 280px;
+    height: 497px; /* 9:16 aspect ratio - perfect for mobile videos */
+    border-radius: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: #000;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    z-index: 1;
+    will-change: transform;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+}
+
+.youtube-embed:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+}
+
+.youtube-embed iframe {
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    border: none;
+    background: #000;
+}
+
+/* Mobile responsive YouTube embeds */
+@media (max-width: 768px) {
+    .youtube-embed {
+        width: 100%;
+        max-width: 280px;
+        height: auto;
+        min-height: 400px;
+        /* Disable hover effects on mobile */
+        transform: none;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+    
+    .youtube-embed:hover {
+        transform: none;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+    
+    .youtube-embed iframe {
+        min-height: 400px;
+    }
+}
+
+/* Mobile responsive hero fixes */
+@media (max-width: 768px) {
+    .hero {
+        /* Ensure hero background is completely static on mobile */
+        background-attachment: scroll !important;
+        background-position: center center !important;
+        /* Prevent any background movement */
+        transform: none !important;
+        will-change: auto !important;
+    }
+    
+    /* Disable any parallax-related CSS on mobile */
+    .hero * {
+        transform: none !important;
+        will-change: auto !important;
     }
 }
